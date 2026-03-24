@@ -124,6 +124,36 @@ def safe_attr(element, selector: str, attr: str) -> str | None:
     return None
 
 
+def img_element_src(img) -> str | None:
+    """Resolve image URL from a Playwright ElementHandle <img> (lazy-load aware)."""
+    if not img:
+        return None
+    try:
+        for attr in ("data-src", "data-lazy-src", "data-original"):
+            val = img.get_attribute(attr)
+            if val and val.strip():
+                v = val.strip()
+                if "placeholder" in v and "thumb.php" not in v:
+                    continue
+                return v if v.startswith("http") else BASE_URL + v
+
+        srcset = img.get_attribute("srcset")
+        if srcset:
+            first = srcset.split(",")[0].split()[0].strip()
+            if first and "placeholder" not in first:
+                return first if first.startswith("http") else BASE_URL + first
+
+        src = img.get_attribute("src")
+        if src and src.strip():
+            s = src.strip()
+            if "placeholder" in s and "thumb.php" not in s:
+                return None
+            return s if s.startswith("http") else BASE_URL + s
+    except Exception:
+        pass
+    return None
+
+
 def resolve_img_src(element) -> str | None:
     """
     ekantipur lazy-loads images.  Attribute priority:
@@ -151,30 +181,19 @@ def resolve_img_src(element) -> str | None:
             pass
         return None
 
-    for attr in ("data-src", "data-lazy-src", "data-original"):
-        val = img.get_attribute(attr)
-        if val and val.strip():
-            v = val.strip()
-            # "placeholder" check: skip generic blank placeholders BUT
-            # keep CDN thumb.php URLs even if they happen to contain the word
-            if "placeholder" in v and "thumb.php" not in v:
-                continue
-            return v if v.startswith("http") else BASE_URL + v
+    return img_element_src(img)
 
-    srcset = img.get_attribute("srcset")
-    if srcset:
-        first = srcset.split(",")[0].split()[0].strip()
-        if first and "placeholder" not in first:
-            return first if first.startswith("http") else BASE_URL + first
 
-    src = img.get_attribute("src")
-    if src and src.strip():
-        s = src.strip()
-        if "placeholder" in s and "thumb.php" not in s:
-            return None
-        return s if s.startswith("http") else BASE_URL + s
-
-    return None
+def cartoonist_from_img_alt(alt: str | None) -> str | None:
+    """
+    Cartoon carousel <img alt> text is like:
+      'कान्तिपुर दैनिकमा आज प्रकाशित अविनको कार्टुन'
+    The cartoonist name is the Devanagari word immediately before 'को कार्टुन'.
+    """
+    if not alt or not alt.strip():
+        return None
+    parts = re.findall(r"([\u0900-\u097F]+)को\s*कार्टुन", alt.strip())
+    return parts[-1] if parts else None
 
 
 def clean_author(raw: str | None) -> str | None:
@@ -472,18 +491,36 @@ def scrape_cartoon_of_the_day(page) -> dict:
 
     def extract_from_section(sec) -> dict | None:
         """Pull title/image/author from a known section element."""
+        # Homepage widget is often `.cartoon-slider` (Swiper): visible caption lives on
+        # the active slide's <img alt>, not in headings or <p>. Prefer that slide's img.
+        img_el = sec.query_selector(".swiper-slide-active img") or sec.query_selector("img")
+        img_alt = None
+        try:
+            if img_el:
+                raw_alt = img_el.get_attribute("alt")
+                if raw_alt and raw_alt.strip():
+                    img_alt = raw_alt.strip()
+        except Exception:
+            pass
+
         title = (
             safe_text(sec, ".cartoon-title") or safe_text(sec, ".post-title")
             or safe_text(sec, ".title") or safe_text(sec, "figcaption")
             or safe_text(sec, "h2 a") or safe_text(sec, "h2")
             or safe_text(sec, "h3 a") or safe_text(sec, "h3")
+            or (img_alt if img_alt else None)
             or safe_text(sec, "p")
         )
-        image_url = resolve_img_src(sec) or safe_attr(sec, "img", "src")
+        image_url = (
+            (img_element_src(img_el) if img_el else None)
+            or resolve_img_src(sec)
+            or safe_attr(sec, "img", "src")
+        )
         author = clean_author(
             safe_text(sec, ".artist-name") or safe_text(sec, ".cartoonist")
             or safe_text(sec, ".author-name") or safe_text(sec, ".author a")
             or safe_text(sec, "[class*='author']") or safe_text(sec, "[class*='artist']")
+            or cartoonist_from_img_alt(img_alt)
         )
         return {"title": title, "image_url": image_url, "author": author} if image_url else None
 
