@@ -1,0 +1,39 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+*.pyo
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Playwright / browser binaries
+playwright/
+
+# Output files
+output.json
+debug_snapshot_*.html
+
+# Logs
+*.log
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Other temporary files
+*.tmp
+*.swp
+
+# uv CLI
+uv.lock
