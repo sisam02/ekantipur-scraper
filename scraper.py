@@ -504,6 +504,26 @@ def scrape_cartoon_of_the_day(page) -> dict:
             pass
 
         active_sec = sec.query_selector(".swiper-slide-active") or sec
+        # When the selector matches only the image block (e.g. background-image),
+        # caption/byline text may live in a nearby ancestor rather than inside `sec`.
+        container_text_for_fallback = ""
+        try:
+            container_text_for_fallback = (
+                sec.evaluate(
+                    """(e) => {
+                        let n = e;
+                        for (let i = 0; i < 7 && n; i++) {
+                            const t = (n.innerText || '').trim();
+                            if (t && (t.includes('कार्टुन') || t.includes('चित्रकार'))) return t;
+                            n = n.parentElement;
+                        }
+                        return (e.innerText || '').trim();
+                    }"""
+                )
+                or ""
+            )
+        except Exception:
+            pass
 
         title = (
             safe_text(active_sec, ".cartoon-title") or safe_text(active_sec, ".post-title")
@@ -526,16 +546,16 @@ def scrape_cartoon_of_the_day(page) -> dict:
         # Some widgets embed author in text like: "चित्रकार: NAME"
         author_from_embedded = None
         try:
-            container_text = active_sec.inner_text() or ""
+            container_text = container_text_for_fallback or (active_sec.inner_text() or "")
             m = re.search(
-                r"चित्रकार\s*[:\-\u2013\u2014\u0964]\s*([^\n\r]+)",
+                r"चित्रकार\s*[:\uFF1a\-\u2013\u2014\u0964]\s*([^\n\r]+)",
                 container_text,
             )
             if m:
                 author_from_embedded = m.group(1).strip()
             else:
                 m = re.search(
-                    r"चित्रकार\s*[:\-\u2013\u2014\u0964]?\s*([^\n\r]+)",
+                    r"चित्रकार\s*[:\uFF1a\-\u2013\u2014\u0964]?\s*([^\n\r]+)",
                     container_text,
                 )
                 if m:
@@ -552,6 +572,24 @@ def scrape_cartoon_of_the_day(page) -> dict:
             or safe_text(active_sec, "p")
             or cartoonist_from_img_alt(img_alt)
         )
+
+        # Last-resort extraction from ancestor text when selectors miss caption.
+        if (title is None or author is None) and container_text_for_fallback:
+            if title is None and "कार्टुन" in container_text_for_fallback:
+                m_title = re.search(r"([^\n\r]{3,}कार्टुन)", container_text_for_fallback)
+                if m_title:
+                    title = m_title.group(1).strip()
+
+            if author is None and "चित्रकार" in container_text_for_fallback:
+                m_author = re.search(
+                    r"चित्रकार\s*[:\uFF1a\-\u2013\u2014\u0964]?\s*([^\n\r,，]+)",
+                    container_text_for_fallback,
+                )
+                if m_author:
+                    cand = m_author.group(1).strip()
+                    cand = re.sub(r"\s*कार्टुन.*$", "", cand).strip()
+                    author = clean_author(cand) or author
+
         return {"title": title, "image_url": image_url, "author": author} if image_url else None
 
     def try_css(p) -> dict | None:

@@ -1,8 +1,20 @@
 {
   "entertainment_news": [
     {
+      "title": "‘हामी तीन भाइ’लाई युनिभर्सल सर्टिफिकेट",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/-2532026091301-watermarked.png",
+      "category": "मनोरञ्जन",
+      "author": "कान्तिपुर संवाददाता"
+    },
+    {
       "title": "निफमा रसियन फिल्महरू पनि स्क्रिनिङ हुँदै",
       "image_url": "https://assets-cdn.ekantipur.com/uploads/source/third-party/niff-russia-2532026091356-watermarked.jpg",
+      "category": "मनोरञ्जन",
+      "author": "कान्तिपुर संवाददाता"
+    },
+    {
+      "title": "कथाघेरा घुम्ती नाटक देखाउन 'बाटैबाटो'",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/61e3395f-d04c-4db1-bec7-5ebbe00c4fa6-2532026090623-watermarked.jpg",
       "category": "मनोरञ्जन",
       "author": "कान्तिपुर संवाददाता"
     },
@@ -15,18 +27,6 @@
     {
       "title": "‘दृश्यम ३’ को प्रदर्शन मिति सारियो",
       "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/drishyam-2432026085848-watermarked.jpg",
-      "category": "मनोरञ्जन",
-      "author": "कान्तिपुर संवाददाता"
-    },
-    {
-      "title": "बेनिशाको प्रमुख भूमिकामा नाटक ‘सेतो धरती’",
-      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/-2432026085500-watermarked.png",
-      "category": "मनोरञ्जन",
-      "author": "कान्तिपुर संवाददाता"
-    },
-    {
-      "title": "छायांकनमा 'बा: एक योद्धा'",
-      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/ba-2432026084218-watermarked.png",
       "category": "मनोरञ्जन",
       "author": "कान्तिपुर संवाददाता"
     }
