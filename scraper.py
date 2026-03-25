@@ -503,23 +503,53 @@ def scrape_cartoon_of_the_day(page) -> dict:
         except Exception:
             pass
 
+        active_sec = sec.query_selector(".swiper-slide-active") or sec
+
         title = (
-            safe_text(sec, ".cartoon-title") or safe_text(sec, ".post-title")
-            or safe_text(sec, ".title") or safe_text(sec, "figcaption")
-            or safe_text(sec, "h2 a") or safe_text(sec, "h2")
-            or safe_text(sec, "h3 a") or safe_text(sec, "h3")
+            safe_text(active_sec, ".cartoon-title") or safe_text(active_sec, ".post-title")
+            or safe_text(active_sec, ".title") or safe_text(active_sec, "figcaption")
+            or safe_text(active_sec, "figcaption p")
+            or safe_text(active_sec, "h2:not([class]) a") or safe_text(active_sec, "h2:not([class])")
+            or safe_text(active_sec, "h3:not([class]) a") or safe_text(active_sec, "h3:not([class])")
+            or safe_text(active_sec, "h2 a") or safe_text(active_sec, "h2")
+            or safe_text(active_sec, "h3 a") or safe_text(active_sec, "h3")
+            or safe_text(active_sec, "[class*='caption']")
             or (img_alt if img_alt else None)
-            or safe_text(sec, "p")
+            or safe_text(active_sec, "p")
         )
         image_url = (
             (img_element_src(img_el) if img_el else None)
             or resolve_img_src(sec)
             or safe_attr(sec, "img", "src")
         )
+
+        # Some widgets embed author in text like: "चित्रकार: NAME"
+        author_from_embedded = None
+        try:
+            container_text = active_sec.inner_text() or ""
+            m = re.search(
+                r"चित्रकार\s*[:\-\u2013\u2014\u0964]\s*([^\n\r]+)",
+                container_text,
+            )
+            if m:
+                author_from_embedded = m.group(1).strip()
+            else:
+                m = re.search(
+                    r"चित्रकार\s*[:\-\u2013\u2014\u0964]?\s*([^\n\r]+)",
+                    container_text,
+                )
+                if m:
+                    author_from_embedded = m.group(1).strip()
+        except Exception:
+            pass
+
         author = clean_author(
-            safe_text(sec, ".artist-name") or safe_text(sec, ".cartoonist")
-            or safe_text(sec, ".author-name") or safe_text(sec, ".author a")
-            or safe_text(sec, "[class*='author']") or safe_text(sec, "[class*='artist']")
+            safe_text(active_sec, ".artist-name") or safe_text(active_sec, ".cartoonist")
+            or safe_text(active_sec, ".author-name") or safe_text(active_sec, ".author a")
+            or safe_text(active_sec, "[class*='author']") or safe_text(active_sec, "[class*='artist']")
+            or author_from_embedded
+            or safe_text(active_sec, "span")
+            or safe_text(active_sec, "p")
             or cartoonist_from_img_alt(img_alt)
         )
         return {"title": title, "image_url": image_url, "author": author} if image_url else None

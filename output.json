@@ -1,0 +1,39 @@
+{
+  "entertainment_news": [
+    {
+      "title": "निफमा रसियन फिल्महरू पनि स्क्रिनिङ हुँदै",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/third-party/niff-russia-2532026091356-watermarked.jpg",
+      "category": "मनोरञ्जन",
+      "author": "कान्तिपुर संवाददाता"
+    },
+    {
+      "title": "इरानी सिनेमाले नेपाली मेकरलाई सिकाएको ‘मौन भाषा’",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/witfh2-2432026021537-watermarked.jpg",
+      "category": "मनोरञ्जन",
+      "author": "समर्पण श्री"
+    },
+    {
+      "title": "‘दृश्यम ३’ को प्रदर्शन मिति सारियो",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/drishyam-2432026085848-watermarked.jpg",
+      "category": "मनोरञ्जन",
+      "author": "कान्तिपुर संवाददाता"
+    },
+    {
+      "title": "बेनिशाको प्रमुख भूमिकामा नाटक ‘सेतो धरती’",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/-2432026085500-watermarked.png",
+      "category": "मनोरञ्जन",
+      "author": "कान्तिपुर संवाददाता"
+    },
+    {
+      "title": "छायांकनमा 'बा: एक योद्धा'",
+      "image_url": "https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2026/third-party/ba-2432026084218-watermarked.png",
+      "category": "मनोरञ्जन",
+      "author": "कान्तिपुर संवाददाता"
+    }
+  ],
+  "cartoon_of_the_day": {
+    "title": "कान्तिपुर दैनिकमा आज प्रकाशित अविनको कार्टुन",
+    "image_url": "https://assets-cdn-api.ekantipur.com/thumb.php?src=https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2022/third-party/gajab-chha-ba-821211-2532026035759-1000x0.jpg&w=601&h=0",
+    "author": "अविन"
+  }
+}

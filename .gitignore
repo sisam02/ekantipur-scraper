@@ -19,7 +19,6 @@ Thumbs.db
 playwright/
 
 # Output files
-output.json
 debug_snapshot_*.html
 
 # Logs
